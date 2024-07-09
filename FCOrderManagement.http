@@ -1,0 +1,45 @@
+### Retrieve API documentation
+GET https://fcinterviewapi01.azurewebsites.net/swagger
+X-API-KEY: 5E5B8267
+
+### User Authentication
+POST https://fcinterviewapi01.azurewebsites.net/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "Zane",
+  "password": "123@pass"
+}
+
+### Get Products List
+GET https://fcinterviewapi01.azurewebsites.net/api/products
+X-API-KEY: 5E5B8267
+
+### Place an Order
+POST https://fcinterviewapi01.azurewebsites.net/api/orders
+Content-Type: application/json
+X-API-KEY: 5E5B8267
+
+{
+  "OrderID": 0,
+  "UserID": "1",
+  "OrderDate": "2023-07-09T10:15:59.057Z",
+  "CustomerName": "Zubeid Hendricks",
+  "SalesValueExcludingVAT": 300.00,
+  "Discount": 9.00,
+  "SalesValueIncludingVAT": 331.50,
+  "OrderDetails": [
+    {
+      "OrderDetailID": 0,
+      "OrderID": 0,
+      "ProductID": 1,
+      "Quantity": 2
+    },
+    {
+      "OrderDetailID": 0,
+      "OrderID": 0,
+      "ProductID": 2,
+      "Quantity": 1
+    }
+  ]
+}

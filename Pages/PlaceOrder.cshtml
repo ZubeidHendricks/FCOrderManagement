@@ -1,0 +1,45 @@
+﻿@page
+@model PlaceOrderModel
+@{
+    ViewData["Title"] = "Place Order";
+}
+
+<h2>Place Order</h2>
+
+<form method="post">
+    <div>
+        <label asp-for="Order.CustomerName"></label>
+        <input asp-for="Order.CustomerName" />
+        <span asp-validation-for="Order.CustomerName"></span>
+    </div>
+    <div>
+        <label asp-for="Order.OrderDate"></label>
+        <input asp-for="Order.OrderDate" type="date" />
+        <span asp-validation-for="Order.OrderDate"></span>
+    </div>
+
+    <h3>Products</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Products.Count; i++)
+            {
+                <tr>
+                    <td>@Model.Products[i].Name</td>
+                    <td>@Model.Products[i].Price.ToString("C")</td>
+                    <td>
+                        <input type="number" name="Quantities[@i]" min="0" value="0" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit">Place Order</button>
+</form>
