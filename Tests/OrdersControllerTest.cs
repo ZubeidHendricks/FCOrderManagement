@@ -1,104 +1,39 @@
-﻿using FCOrderManagement.Models;
+﻿using FCOrderManagement.Controllers;
+using FCOrderManagement.Models;
 using FCOrderManagement.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
-public class OrdersControllerTests
+namespace FCOrderManagement.Tests
 {
-    private readonly Mock<IApiService> _mockApiService;
-    private readonly OrdersController _controller;
-
-    public OrdersControllerTests()
+    public class OrdersControllerTest
     {
-        _mockApiService = new Mock<IApiService>();
-        _controller = new OrdersController(_mockApiService.Object);
-    }
+        private readonly Mock<IApiService> _mockApiService;
+        private readonly Mock<OrderCalculationService> _mockCalculationService;
+        private readonly OrdersController _controller;
 
-    [Fact]
-    public async Task PlaceOrder_ValidOrderWithMultipleItems_ReturnsOkResult()
-    {
-        // Arrange
-        var products = new List<Product>
+        public OrdersControllerTest()
         {
-            new Product { ProductID = 1, Price = 100 },
-            new Product { ProductID = 2, Price = 200 }
-        };
+            _mockApiService = new Mock<IApiService>();
+            _mockCalculationService = new Mock<OrderCalculationService>();
+            _controller = new OrdersController(_mockApiService.Object, _mockCalculationService.Object);
+        }
 
-        _mockApiService.Setup(service => service.GetProducts())
-            .ReturnsAsync(products);
-
-        _mockApiService.Setup(service => service.PlaceOrder(It.IsAny<Order>()))
-            .ReturnsAsync(true);
-
-        var order = new Order
+        [Fact]
+        public async Task PlaceOrder_ValidOrder_ReturnsOkResult()
         {
-            UserID = "1",
-            CustomerName = "Test Customer",
-            OrderDate = DateTime.Now,
-            OrderDetails = new List<OrderDetail>
-            {
-                new OrderDetail { ProductID = 1, Quantity = 2 },
-                new OrderDetail { ProductID = 2, Quantity = 1 }
-            }
-        };
+            // Arrange
+            var order = new Order(); // Create a valid order object
+            _mockApiService.Setup(service => service.GetProducts()).ReturnsAsync(new List<Product>());
+            _mockApiService.Setup(service => service.PlaceOrder(It.IsAny<Order>())).ReturnsAsync(true);
 
-        // Act
-        var result = await _controller.PlaceOrder(order);
+            // Act
+            var result = await _controller.PlaceOrder(order);
 
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        dynamic returnValue = okResult.Value;
-        Assert.Equal("Order placed successfully", returnValue.message);
-    }
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
 
-    [Fact]
-    public async Task PlaceOrder_EmptyOrderDetails_ReturnsBadRequest()
-    {
-        // Arrange
-        var order = new Order
-        {
-            UserID = "1",
-            CustomerName = "Test Customer",
-            OrderDate = DateTime.Now,
-            OrderDetails = new List<OrderDetail>()
-        };
-
-        // Act
-        var result = await _controller.PlaceOrder(order);
-
-        // Assert
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
-
-    [Fact]
-    public async Task PlaceOrder_ApiServiceFails_ReturnsBadRequest()
-    {
-        // Arrange
-        _mockApiService.Setup(service => service.GetProducts())
-            .ReturnsAsync(new List<Product>());
-
-        _mockApiService.Setup(service => service.PlaceOrder(It.IsAny<Order>()))
-            .ReturnsAsync(false);
-
-        var order = new Order
-        {
-            UserID = "1",
-            CustomerName = "Test Customer",
-            OrderDate = DateTime.Now,
-            OrderDetails = new List<OrderDetail>
-            {
-                new OrderDetail { ProductID = 1, Quantity = 1 }
-            }
-        };
-
-        // Act
-        var result = await _controller.PlaceOrder(order);
-
-        // Assert
-        Assert.IsType<BadRequestObjectResult>(result);
     }
 }

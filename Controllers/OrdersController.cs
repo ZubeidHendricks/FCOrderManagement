@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FCOrderManagement.Controllers
 {
-    // Controllers/OrdersController.cs
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/Orders")]
     public class OrdersController : ControllerBase
     {
         private readonly IApiService _apiService;
@@ -18,7 +17,7 @@ namespace FCOrderManagement.Controllers
             _calculationService = calculationService;
         }
 
-        [HttpPost]
+        [HttpPost("place")]
         public async Task<IActionResult> PlaceOrder([FromBody] Order order)
         {
             if (!ModelState.IsValid)
@@ -38,5 +37,4 @@ namespace FCOrderManagement.Controllers
             return BadRequest(new { message = "Failed to place order" });
         }
     }
-
 }
